@@ -53,8 +53,8 @@ export class PostServiceStub implements Pick<PostService, keyof PostService> {
     return of({ _id: id, ...data } as Post);
   }
 
-  deleteById(id: string): Observable<Post> {
-    return of({ ...this.posts[0], _id: id } as Post);
+  deleteById(id: string): Observable<number> {
+    return of(1);
   }
 
   deleteAll(): Observable<any> {
