@@ -6,7 +6,7 @@ import { RoleType } from '../database/role-type.enum';
 import { AuthenticatedRequest } from './authenticated-request.interface';
 import { RolesGuard } from './roles.guard';
 
-xdescribe('RolesGuard', () => {
+describe('RolesGuard', () => {
   let guard: RolesGuard;
   let reflector: Reflector;
   beforeEach(async () => {
