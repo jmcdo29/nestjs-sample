@@ -35,6 +35,12 @@ describe('API endpoints testing (e2e)', () => {
       expect(res.status).toBe(404);
     });
 
+    it('/posts (GET) if invalid id should return 400', async () => {
+      const id = "invalidid";
+      const res = await request(app.getHttpServer()).get('/posts/' + id);
+      expect(res.status).toBe(400);
+    });
+
     it('/posts (POST) should return 401', async () => {
       const res = await request(app.getHttpServer())
         .post('/posts')

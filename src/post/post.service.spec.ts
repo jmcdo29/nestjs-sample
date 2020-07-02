@@ -193,17 +193,14 @@ describe('PostService', () => {
         content: 'test content',
       };
 
-      jest.spyOn(model, 'findOne').mockReturnValue({
+      jest.spyOn(model, 'findOneAndUpdate').mockReturnValue({
         exec: jest.fn().mockResolvedValue(toUpdated) as any,
       } as any);
-      jest.spyOn(model, 'updateOne').mockReturnValue({
-        exec: jest.fn().mockResolvedValue({
-          nModified: 1,
-        }) as any,
-      } as any);
+
       service.update('5ee49c3115a4e75254bb732e', toUpdated).subscribe({
         next: (data) => {
-          expect(data).toEqual(1);
+          expect(data).toBeTruthy();
+          expect(model.findOneAndUpdate).toBeCalled();
         },
         error: (error) => console.log(error),
         complete: done(),
@@ -216,18 +213,14 @@ describe('PostService', () => {
         title: 'test title',
         content: 'test content',
       };
-      jest.spyOn(model, 'findOne').mockReturnValue({
+      jest.spyOn(model, 'findOneAndUpdate').mockReturnValue({
         exec: jest.fn().mockResolvedValue(null) as any,
       } as any);
-      jest.spyOn(model, 'updateOne').mockReturnValue({
-        exec: jest.fn().mockResolvedValue({
-          nModified: 1,
-        }) as any,
-      } as any);
+
       service.update('5ee49c3115a4e75254bb732e', toUpdated).subscribe({
         error: (error) => {
           expect(error).toBeDefined();
-          expect(model.updateOne).toHaveBeenCalledTimes(0);
+          expect(model.findOneAndUpdate).toHaveBeenCalledTimes(1);
         },
         complete: done(),
       });
@@ -241,38 +234,28 @@ describe('PostService', () => {
         title: 'test title',
         content: 'test content',
       };
-      jest.spyOn(model, 'findOne').mockReturnValue({
+      jest.spyOn(model, 'findOneAndDelete').mockReturnValue({
         exec: jest.fn().mockResolvedValueOnce(toDeleted),
       } as any);
 
-      jest.spyOn(model, 'deleteOne').mockReturnValue({
-        exec: jest.fn().mockResolvedValue({
-          deletedCount: 1,
-        }) as any,
-      } as any);
-
       service.deleteById('anystring').subscribe({
-        next: (data) => expect(data).toEqual(1),
+        next: (data) => {
+          expect(data).toBeTruthy();
+          expect(model.findOneAndDelete).toBeCalled();
+        },
         error: (error) => console.log(error),
         complete: done(),
       });
     });
 
     it('throw an NotFoundException if post not exists', (done) => {
-      jest.spyOn(model, 'findOne').mockReturnValue({
+      jest.spyOn(model, 'findOneAndDelete').mockReturnValue({
         exec: jest.fn().mockResolvedValue(null),
       } as any);
-
-      jest.spyOn(model, 'deleteOne').mockReturnValue({
-        exec: jest.fn().mockResolvedValue({
-          deletedCount: 1,
-        }) as any,
-      } as any);
-
       service.deleteById('anystring').subscribe({
         error: (error) => {
           expect(error).toBeDefined();
-          expect(model.deleteOne).toBeCalledTimes(0)
+          expect(model.findOneAndDelete).toBeCalledTimes(1);
         },
         complete: done(),
       });

@@ -49,38 +49,45 @@ export class PostService {
     return from(createPost);
   }
 
-  update(id: string, data: UpdatePostDto): Observable<any> {
-    // return from(
-    //   this.postModel
-    //     .findOneAndUpdate(
-    //       { _id: id },
-    //       { ...data, updatedBy: { _id: this.req.user.id } },
-    //     )
-    //     .exec(),
-    // );
-    const filter = { _id: id };
-    const update = { ...data, updatedBy: { _id: this.req.user.id } };
-    return from(this.postModel.findOne(filter).exec()).pipe(
-      flatMap((post) => (post ? of(post) : EMPTY)),
+  update(id: string, data: UpdatePostDto): Observable<Post> {
+    return from(
+      this.postModel
+        .findOneAndUpdate(
+          { _id: id },
+          { ...data, updatedBy: { _id: this.req.user.id } },
+          { new: true },
+        )
+        .exec(),
+    ).pipe(
+      flatMap((p) => (p ? of(p) : EMPTY)),
       throwIfEmpty(() => new NotFoundException(`post:$id was not found`)),
-      switchMap((p, i) => {
-        return from(this.postModel.updateOne(filter, update).exec());
-      }),
-      map((res) => res.nModified),
     );
+    // const filter = { _id: id };
+    // const update = { ...data, updatedBy: { _id: this.req.user.id } };
+    // return from(this.postModel.findOne(filter).exec()).pipe(
+    //   flatMap((post) => (post ? of(post) : EMPTY)),
+    //   throwIfEmpty(() => new NotFoundException(`post:$id was not found`)),
+    //   switchMap((p, i) => {
+    //     return from(this.postModel.updateOne(filter, update).exec());
+    //   }),
+    //   map((res) => res.nModified),
+    // );
   }
 
-  deleteById(id: string): Observable<number> {
-    //return from(this.postModel.findOneAndDelete({ _id: id }).exec());
-    const filter = { _id: id };
-    return from(this.postModel.findOne(filter).exec()).pipe(
-      flatMap((post) => (post ? of(post) : EMPTY)),
+  deleteById(id: string): Observable<Post> {
+    return from(this.postModel.findOneAndDelete({ _id: id }).exec()).pipe(
+      flatMap((p) => (p ? of(p) : EMPTY)),
       throwIfEmpty(() => new NotFoundException(`post:$id was not found`)),
-      switchMap((p, i) => {
-        return from(this.postModel.deleteOne(filter).exec());
-      }),
-      map((res) => res.deletedCount),
     );
+    // const filter = { _id: id };
+    // return from(this.postModel.findOne(filter).exec()).pipe(
+    //   flatMap((post) => (post ? of(post) : EMPTY)),
+    //   throwIfEmpty(() => new NotFoundException(`post:$id was not found`)),
+    //   switchMap((p, i) => {
+    //     return from(this.postModel.deleteOne(filter).exec());
+    //   }),
+    //   map((res) => res.deletedCount),
+    // );
   }
 
   deleteAll(): Observable<any> {
