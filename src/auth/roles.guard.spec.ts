@@ -1,4 +1,4 @@
-import { createMock } from '@golevelup/nestjs-testing';
+import { createMock } from '@golevelup/ts-jest';
 import { ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -27,19 +27,22 @@ describe('RolesGuard', () => {
     reflector = module.get<Reflector>(Reflector);
   });
 
+  afterEach(async () => {
+    jest.clearAllMocks();
+  });
+
   it('should be defined', () => {
     expect(guard).toBeDefined();
   });
 
   it('should skip(return true) if the `HasRoles` decorator is not set', async () => {
-    jest.spyOn(reflector, 'get').mockReturnValue([]);
-    const context = createMock<ExecutionContext>({
-      getHandler: jest.fn(),
-    });
+    const reflectorGetSpy =jest.spyOn(reflector, 'get');
+    reflectorGetSpy.mockReturnValue([]);
+    const context = createMock<ExecutionContext>();
     const result = await guard.canActivate(context);
 
     expect(result).toBeTruthy();
-    expect(reflector.get).toBeCalled();
+    expect(reflectorGetSpy).toBeCalled();
   });
 
   it('should return true if the `HasRoles` decorator is set', async () => {
