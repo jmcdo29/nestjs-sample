@@ -35,9 +35,10 @@ export class PostDataInitializerService
 
   onModuleInit(): void {
     console.log('(PostModule) is initialized...');
-    Promise.all(this.data.map((d) => this.postModel.create(d))).then((saved) =>
-      console.log(saved),
-    );
+    this.postModel.insertMany(this.data).then((r) => console.log(r));
+    // Promise.all(this.data.map((d) => this.postModel.create(d))).then((saved) =>
+    //   console.log(saved),
+    // );
   }
 
   onModuleDestroy(): void {
